@@ -1,66 +1,66 @@
-# 2021.3.31更新中，后续还有变………………
 
-### EUserv IPV6添加WARP IPV4，脚本仅针对OpenVZ、LXC架构的IPV6 only VPS，添加WARP IPV4网络支持，默认已设置WARP IPV4优先
+#### EUserv IPV6添加WARP IPV4，脚本主要针对OpenVZ、LXC架构的IPV6 only VPS，添加WARP IPV4网络支持，默认已设置WARP IPV4优先
 
-## 最新德鸡EUserv-DIG9危机教程视频发布：待定…………
+#### 原先详细视频教程及探讨：https://youtu.be/78dZgYFS-Qo
+
+#### 最新德鸡EUserv抛弃DNS64、自定义分流教程：即将发布。。。。
 
 -------------------------------------------------------------------------------------------------------
-# 第一部分：以下内容仅针对root@DIG9用户（觉得麻烦，可以直接用第二部分的脚本）
 
-#### 一：建议使用debain系统，不要添加DNS64,不要添加DNS64,不要添加DNS64
-
-#### 二、准备三个文件
-可直接在本项目中下载这三个文件，如要最新版请下载1与2
-
-1、wgcf官方最新下载：https://github.com/ViRb3/wgcf/releases 选择linux_amd64 重命名为wgcf 
-
-2、wireguard-go P3大最新下载：https://github.com/P3TERX/wireguard-go-builder/releases 选择linux-amd64.tar.gz 解压后重命名为wireguard-go
-
-3、EUdig9.sh脚本文件自行下载
-
-以上三个文件直接拖到德鸡/root目录上
-
-#### 三、直接运行脚本：
+##### 一：恢复EUserv官方DNS64（重装系统者，可直接跳到第二步脚本安装）
 ```
-chmod +x EUdig9.sh && ./EUdig9.sh
+echo -e "search blue.kundencontroller.de\noptions rotate\nnameserver 2a02:180:6:5::1c\nnameserver 2a02:180:6:5::4\nnameserver 2a02:180:6:5::1e\nnameserver 2a02:180:6:5::1d" > /etc/resolv.conf
 ```
 
-### 推荐用mack-a，phlinhng两大IPV6 Xray脚本。
-
-mack-a：https://github.com/mack-a/v2ray-agent
-
-phlinhng：https://github.com/phlinhng/v2ray-tcp-tls-web
-
-------------------------------------------------------------------------------------—----------------------------------------
-
-# 第二部分：以下内容仅针对root@srvXXXXX用户
-
-## 详细视频教程及探讨：https://youtu.be/78dZgYFS-Qo
-
-#### 一、无须添加DNS/NAT64，直接运行以下脚本
-
-#### 二、Debian 10/Ubuntu 20.04系统脚本（已添加IPV6直接支持）,一键到底！
+##### 二、无须添加DNS64！！！Debian 10/Ubuntu 20.04系统脚本,一键到底（有无成功可查看脚本末尾提示）！
 ```
-wget -qO- https://cdn.jsdelivr.net/gh/YG-tsj/EUserv-addv4-warp/srvDIG9.sh|bash
+wget -qO- https://cdn.jsdelivr.net/gh/YG-tsj/EUserv-addv4-warp/WARP4.sh|bash
 ```
 
-### 推荐用mack-a，phlinhng两大IPV6 Xray脚本。
-
-mack-a：https://github.com/mack-a/v2ray-agent
-
-phlinhng：https://github.com/phlinhng/v2ray-tcp-tls-web
+##### 三、搞定，安装你喜欢的各种脚本吧！
 
 ------------------------------------------------------------------------------------------------------------- 
- 
-# 第三部分：临时或关闭打开Warp ipv4、验证优先级
+##### 分流配置文件(以下默认全局IPV4优先，还可设置全局IPV6、分流IPV4优先域名、分流IPV6优先域名，共4种情况，详情见视频教程)
+```
+{ 
+"outbounds": [
+    {
+      "tag":"IP6-out",
+      "protocol": "freedom",
+      "settings": {}
+    },
+    {
+      "tag":"IP4-out",
+      "protocol": "freedom",
+      "settings": {
+        "domainStrategy": "UseIPv4" 
+      }
+    }
+  ],
+  "routing": {
+    "rules": [
+      {
+        "type": "field",
+        "outboundTag": "IP4-out",
+        "domain": [""] 
+      },
+      {
+        "type": "field",
+        "outboundTag": "IP6-out",
+        "network": "udp,tcp" 
+      }
+    ]
+  }
+}
+``` 
+ ---------------------------------------------------------------------------------------------------------
 
-### 由于默认设置WARP IPV4优先，可能你有时不希望WARP IPV4优先，那么可以先关，再开（虽然重启后会自动打开）
+#### 相关WARP进程命令
 
-手动关闭WARP网络接口
+手动临时关闭WARP网络接口
 ```
 wg-quick down wgcf
 ```
-
 手动开启WARP网络接口 
 ```
 wg-quick up wgcf
@@ -71,16 +71,19 @@ wg-quick up wgcf
 wg
 ```
 
-### 验证IP优先级(验证功能已集成脚本结尾)
-```
-curl ip.p3terx.com
-```
+启动systemctl enable wg-quick@wgcf
+
+开始systemctl start wg-quick@wgcf
+
+重启systemctl restart wg-quick@wgcf
+
+停止systemctl stop wg-quick@wgcf
+
+关闭systemctl disable wg-quick@wgcf
+
+#### 下期彩蛋：EUserv双栈warp？可以有！
 
 ---------------------------------------------------------------------------------------------------------------------
-感谢杀鸡取卵方案原作者F大！参考来源：
- 
-项目地址：https://github.com/fscarmen/warp/tree/main/DiG9
-
 
 感谢P3terx大及原创者们，参考来源：
  
